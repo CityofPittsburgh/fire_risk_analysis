@@ -1,0 +1,9 @@
+numpy
+pandas
+sqlalchemy
+matplotlib
+sklearn
+xgboost
+os
+csv
+requests
