@@ -12,13 +12,13 @@ parcel_url = "https://data.wprdc.org/dataset/2536e5e2-253b-4c58-969d-687828bb94c
 
 
 pli_response = requests.get(pli_url)
-with open(os.path.join("/data", "pli.csv"), 'wb') as f:
+with open(os.path.join("/datasets", "pli.csv"), 'wb') as f:
     f.write(pli_response.content)
 
 property_response = requests.get(property_url)
-with open(os.path.join("/data", "properties.csv"), 'wb') as f:
+with open(os.path.join("/datasets", "pittdata.csv"), 'wb') as f:
     f.write(property_response.content)
 
 parcel_response = requests.get(parcel_url)
-with open(os.path.join("/data", "parcels.csv"), 'wb') as f:
+with open(os.path.join("/datasets", "parcels.csv"), 'wb') as f:
     f.write(parcel_response.content)
