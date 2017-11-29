@@ -20,14 +20,14 @@ pitt['HouseNum'] = pitt['PROPERTYHOUSENUM'].astype(str).map(lambda x: x.rstrip('
 pitt['NewAddress'] = pitt['HouseNum'].astype(str) + " " + pitt['PROPERTYADDRESS']
 
 # Merge risk to pitt
-pitt_risk = pd.merge(left=pitt,right=risk, how='left', left_on='NewAddress', right_on='Address')
+pitt_risk = pd.merge(left=risk,right=pitt, how='left', left_on='Address', right_on='NewAddress')
 
 del pitt_risk['NewAddress']
 del pitt_risk['HouseNum']
-del pitt_risk['Unnamed:0']
+del pitt_risk['Unnamed: 0']
 
 # Merge pitt_risk to parcels
-pitt_risk_parcels = pd.merge(left=parcels,right=pitt_risk, how='left', left_on='PIN', right_on='PARID')
+pitt_risk_parcels = pd.merge(left=pitt_risk,right=parcels, how='left', left_on='PARID', right_on='PIN')
 
 # Output to csv
 pitt_risk_parcels.to_csv("{0}fire_risk_nonres.csv".format(input), index=False)
