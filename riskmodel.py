@@ -154,36 +154,16 @@ fire_pre14['st_type'] = fire_pre14['st_type'].str.replace('AV','AVE')
 fire_pre14['street'] = fire_pre14['street'].str.strip() +' ' +fire_pre14['st_type'].str.strip()
 
 #reading the fire_historicalfile
-fire_historical = pd.read_csv('datasets/Fire_Incidents_Historical.csv',encoding = 'utf-8',dtype={'street':'str','number':'str'}, low_memory=False)
+fire_new = pd.read_csv('datasets/Fire_Incidents_New.csv',encoding = 'utf-8',dtype={'street':'str','number':'str'}, low_memory=False)
 
 #deleting columns not required
-del fire_historical['inci_id']
-del fire_historical['alm_dttm']
-del fire_historical['arv_dttm']
-del fire_historical['pbf_narcan']
-del fire_historical['meds_glucose']
-del fire_historical['meds_epi']
-del fire_historical['meds_nitro']
-del fire_historical['pbf_albut']
-del fire_historical['cpr']
-del fire_historical['car_arr']
-del fire_historical['aed']
-del fire_historical['none']
-del fire_historical['pbf_lift_ass']
-del fire_historical['Med_Assist']
-del fire_historical['XCOORD']
-del fire_historical['YCOORD']
-del fire_historical['LOCATION']
-del fire_historical['REP_DIST']
-del fire_historical['alarms']
-del fire_historical['inci_type']
-del fire_historical['Lift_Ref']
-del fire_historical['Card_CPR']
-del fire_historical['AGENCY']
-del fire_historical['PRIMARY_UNIT']
-del fire_historical['MAP_PAGE']
-del fire_historical['CURR_DGROUP']
-del fire_historical['CALL_NO']
+del fire_new['alm_dttm']
+del fire_new['arv_dttm']
+del fire_new['XCOORD']
+del fire_new['YCOORD']
+del fire_new['alarms']
+del fire_new['inci_type']
+del fire_new['CALL_NO']
 del fire_pre14['PRIMARY_UNIT']
 del fire_pre14['MAP_PAGE']
 del fire_pre14['alm_dttm']
@@ -202,102 +182,102 @@ cols = [0,4]
 fire_pre14.drop(fire_pre14.columns[cols],axis=1,inplace=True)
 
 #joining both the fire incidents file together
-fire_historical = fire_historical.append(fire_pre14, ignore_index=True)
+fire_new = fire_new.append(fire_pre14, ignore_index=True)
 
 #more cleaning and removing descriptions which are not fire related
-fire_historical['descript'] = fire_historical['descript'].str.strip()
-fire_historical = fire_historical[fire_historical.descript != 'System malfunction, Other']
-# fire_historical = fire_historical[fire_historical.descript != 'Smoke detector activation, no fire - unintentional']
-# fire_historical = fire_historical[fire_historical.descript != 'Alarm system activation, no fire - unintentional']
-fire_historical = fire_historical[fire_historical.descript != 'Detector activation, no fire - unintentional']
-fire_historical = fire_historical[fire_historical.descript != 'Smoke detector activation due to malfunction']
-fire_historical = fire_historical[fire_historical.descript != 'Dispatched & cancelled en route']
-fire_historical = fire_historical[fire_historical.descript != 'Dispatched & cancelled on arrival']
-fire_historical = fire_historical[fire_historical.descript != 'EMS call, excluding vehicle accident with injury']
-fire_historical = fire_historical[fire_historical.descript != 'Medical assist, assist EMS crew']
-fire_historical = fire_historical[fire_historical.descript != 'Emergency medical service, other']
-fire_historical = fire_historical[fire_historical.descript != 'Good intent call, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Rescue, EMS incident, other']
-fire_historical = fire_historical[fire_historical.descript != 'Medical Alarm Activation (No Medical Service Req)']
-fire_historical = fire_historical[fire_historical.descript != 'Motor Vehicle Accident with no injuries']
-fire_historical = fire_historical[fire_historical.descript != 'No Incident found on arrival at dispatch address']
-fire_historical = fire_historical[fire_historical.descript != 'Unintentional transmission of alarm, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Motor vehicle accident with injuries']
-fire_historical = fire_historical[fire_historical.descript != 'Vehicle accident, general cleanup']
-fire_historical = fire_historical[fire_historical.descript != 'Power line down']
-fire_historical = fire_historical[fire_historical.descript != 'Person in distress, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Cable/Telco Wires Down']
-fire_historical = fire_historical[fire_historical.descript != 'Service Call, other']
-fire_historical = fire_historical[fire_historical.descript != 'Vehicle Accident canceled en route']
-fire_historical = fire_historical[fire_historical.descript != 'Lock-out']
-fire_historical = fire_historical[fire_historical.descript != 'False alarm or false call, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Assist police or other governmental agency']
-fire_historical = fire_historical[fire_historical.descript != 'Special type of incident, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Alarm system sounded due to malfunction']
-fire_historical = fire_historical[fire_historical.descript != 'Motor vehicle/pedestrian accident (MV Ped)']
-fire_historical = fire_historical[fire_historical.descript != 'Assist invalid ']
-fire_historical = fire_historical[fire_historical.descript != 'Malicious, mischievous false call, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Accident, potential accident, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Assist invalid']
-fire_historical = fire_historical[fire_historical.descript != 'EMS call, party transported by non-fire agency']
-fire_historical = fire_historical[fire_historical.descript != 'Rescue or EMS standby']
-fire_historical = fire_historical[fire_historical.descript != 'Public service assistance, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Police matter']
-fire_historical = fire_historical[fire_historical.descript != 'Lock-in (if lock out , use 511 )']
-fire_historical = fire_historical[fire_historical.descript != 'Sprinkler activation, no fire - unintentional']
-fire_historical = fire_historical[fire_historical.descript != 'Wrong location']
-fire_historical = fire_historical[fire_historical.descript != 'Local alarm system, malicious false alarm']
-fire_historical = fire_historical[fire_historical.descript != 'Authorized controlled burning']
-fire_historical = fire_historical[fire_historical.descript != 'Water problem, Other']
-# fire_historical = fire_historical[fire_historical.descript != 'Smoke or odor removal']
-fire_historical = fire_historical[fire_historical.descript != 'Passenger vehicle fire']
-fire_historical = fire_historical[fire_historical.descript != 'CO detector activation due to malfunction']
-fire_historical = fire_historical[fire_historical.descript != 'Authorized controlled burning']
-fire_historical = fire_historical[fire_historical.descript != 'Steam, vapor, fog or dust thought to be smoke']
-fire_historical = fire_historical[fire_historical.descript != 'Overheated motor']
-fire_historical = fire_historical[fire_historical.descript != 'Local alarm system, malicious false alarm']
-fire_historical = fire_historical[fire_historical.descript != 'Central station, malicious false alarm']
-fire_historical = fire_historical[fire_historical.descript != 'Public service']
-# fire_historical = fire_historical[fire_historical.descript != 'Building or structure weakened or collapsed']
-fire_historical = fire_historical[fire_historical.descript != 'Heat detector activation due to malfunction']
-fire_historical = fire_historical[fire_historical.descript != 'Citizen complaint']
-fire_historical = fire_historical[fire_historical.descript != 'Municipal alarm system, malicious false alarm']
-fire_historical = fire_historical[fire_historical.descript != 'Sprinkler activation due to malfunction']
-fire_historical = fire_historical[fire_historical.descript != 'Severe weather or natural disaster, Other']
-fire_historical = fire_historical[fire_historical.descript != 'Water evacuation']
-fire_historical = fire_historical[fire_historical.descript != 'Breakdown of light ballast']
-fire_historical = fire_historical[fire_historical.descript != 'Extrication of victim(s) from vehicle']
-fire_historical = fire_historical[fire_historical.descript != 'Flood assessment']
-fire_historical = fire_historical[fire_historical.descript != 'Telephone, malicious false alarm']
-fire_historical = fire_historical[fire_historical.descript != 'Cover assignment, standby, moveup']
-fire_historical = fire_historical[fire_historical.descript != 'Road freight or transport vehicle fire']
-fire_historical = fire_historical[fire_historical['full.code'].str.strip()  != '540 - Animal problem, Other']
-fire_historical = fire_historical[fire_historical['full.code'].str.strip()  != '5532 - Public Education (Station Visit)']
-fire_historical = fire_historical[fire_historical['full.code'].str.strip()  != '353 - Removal of victim(s) from stalled elevator']
+fire_new['descript'] = fire_new['descript'].str.strip()
+fire_new = fire_new[fire_new.descript != 'System malfunction, Other']
+# fire_new = fire_new[fire_new.descript != 'Smoke detector activation, no fire - unintentional']
+# fire_new = fire_new[fire_new.descript != 'Alarm system activation, no fire - unintentional']
+fire_new = fire_new[fire_new.descript != 'Detector activation, no fire - unintentional']
+fire_new = fire_new[fire_new.descript != 'Smoke detector activation due to malfunction']
+fire_new = fire_new[fire_new.descript != 'Dispatched & cancelled en route']
+fire_new = fire_new[fire_new.descript != 'Dispatched & cancelled on arrival']
+fire_new = fire_new[fire_new.descript != 'EMS call, excluding vehicle accident with injury']
+fire_new = fire_new[fire_new.descript != 'Medical assist, assist EMS crew']
+fire_new = fire_new[fire_new.descript != 'Emergency medical service, other']
+fire_new = fire_new[fire_new.descript != 'Good intent call, Other']
+fire_new = fire_new[fire_new.descript != 'Rescue, EMS incident, other']
+fire_new = fire_new[fire_new.descript != 'Medical Alarm Activation (No Medical Service Req)']
+fire_new = fire_new[fire_new.descript != 'Motor Vehicle Accident with no injuries']
+fire_new = fire_new[fire_new.descript != 'No Incident found on arrival at dispatch address']
+fire_new = fire_new[fire_new.descript != 'Unintentional transmission of alarm, Other']
+fire_new = fire_new[fire_new.descript != 'Motor vehicle accident with injuries']
+fire_new = fire_new[fire_new.descript != 'Vehicle accident, general cleanup']
+fire_new = fire_new[fire_new.descript != 'Power line down']
+fire_new = fire_new[fire_new.descript != 'Person in distress, Other']
+fire_new = fire_new[fire_new.descript != 'Cable/Telco Wires Down']
+fire_new = fire_new[fire_new.descript != 'Service Call, other']
+fire_new = fire_new[fire_new.descript != 'Vehicle Accident canceled en route']
+fire_new = fire_new[fire_new.descript != 'Lock-out']
+fire_new = fire_new[fire_new.descript != 'False alarm or false call, Other']
+fire_new = fire_new[fire_new.descript != 'Assist police or other governmental agency']
+fire_new = fire_new[fire_new.descript != 'Special type of incident, Other']
+fire_new = fire_new[fire_new.descript != 'Alarm system sounded due to malfunction']
+fire_new = fire_new[fire_new.descript != 'Motor vehicle/pedestrian accident (MV Ped)']
+fire_new = fire_new[fire_new.descript != 'Assist invalid ']
+fire_new = fire_new[fire_new.descript != 'Malicious, mischievous false call, Other']
+fire_new = fire_new[fire_new.descript != 'Accident, potential accident, Other']
+fire_new = fire_new[fire_new.descript != 'Assist invalid']
+fire_new = fire_new[fire_new.descript != 'EMS call, party transported by non-fire agency']
+fire_new = fire_new[fire_new.descript != 'Rescue or EMS standby']
+fire_new = fire_new[fire_new.descript != 'Public service assistance, Other']
+fire_new = fire_new[fire_new.descript != 'Police matter']
+fire_new = fire_new[fire_new.descript != 'Lock-in (if lock out , use 511 )']
+fire_new = fire_new[fire_new.descript != 'Sprinkler activation, no fire - unintentional']
+fire_new = fire_new[fire_new.descript != 'Wrong location']
+fire_new = fire_new[fire_new.descript != 'Local alarm system, malicious false alarm']
+fire_new = fire_new[fire_new.descript != 'Authorized controlled burning']
+fire_new = fire_new[fire_new.descript != 'Water problem, Other']
+# fire_new = fire_new[fire_new.descript != 'Smoke or odor removal']
+fire_new = fire_new[fire_new.descript != 'Passenger vehicle fire']
+fire_new = fire_new[fire_new.descript != 'CO detector activation due to malfunction']
+fire_new = fire_new[fire_new.descript != 'Authorized controlled burning']
+fire_new = fire_new[fire_new.descript != 'Steam, vapor, fog or dust thought to be smoke']
+fire_new = fire_new[fire_new.descript != 'Overheated motor']
+fire_new = fire_new[fire_new.descript != 'Local alarm system, malicious false alarm']
+fire_new = fire_new[fire_new.descript != 'Central station, malicious false alarm']
+fire_new = fire_new[fire_new.descript != 'Public service']
+# fire_new = fire_new[fire_new.descript != 'Building or structure weakened or collapsed']
+fire_new = fire_new[fire_new.descript != 'Heat detector activation due to malfunction']
+fire_new = fire_new[fire_new.descript != 'Citizen complaint']
+fire_new = fire_new[fire_new.descript != 'Municipal alarm system, malicious false alarm']
+fire_new = fire_new[fire_new.descript != 'Sprinkler activation due to malfunction']
+fire_new = fire_new[fire_new.descript != 'Severe weather or natural disaster, Other']
+fire_new = fire_new[fire_new.descript != 'Water evacuation']
+fire_new = fire_new[fire_new.descript != 'Breakdown of light ballast']
+fire_new = fire_new[fire_new.descript != 'Extrication of victim(s) from vehicle']
+fire_new = fire_new[fire_new.descript != 'Flood assessment']
+fire_new = fire_new[fire_new.descript != 'Telephone, malicious false alarm']
+fire_new = fire_new[fire_new.descript != 'Cover assignment, standby, moveup']
+fire_new = fire_new[fire_new.descript != 'Road freight or transport vehicle fire']
+fire_new = fire_new[fire_new['full.code'].str.strip()  != '540 - Animal problem, Other']
+fire_new = fire_new[fire_new['full.code'].str.strip()  != '5532 - Public Education (Station Visit)']
+fire_new = fire_new[fire_new['full.code'].str.strip()  != '353 - Removal of victim(s) from stalled elevator']
 
 #correcting problems with the street column
-fire_historical['street'] = fire_historical['street'].replace(to_replace=', PGH', value='', regex=True)
-fire_historical['street'] = fire_historical['street'].replace(to_replace=', P', value='', regex=True)
-fire_historical['street'] = fire_historical['street'].replace(to_replace=',', value='', regex=True)
-fire_historical['street'] = fire_historical['street'].replace(to_replace='#.*', value='', regex=True)
-fire_historical['street'] = fire_historical['street'].str.strip()
-fire_historical['number'] = fire_historical['number'].str.strip()
+fire_new['street'] = fire_new['street'].replace(to_replace=', PGH', value='', regex=True)
+fire_new['street'] = fire_new['street'].replace(to_replace=', P', value='', regex=True)
+fire_new['street'] = fire_new['street'].replace(to_replace=',', value='', regex=True)
+fire_new['street'] = fire_new['street'].replace(to_replace='#.*', value='', regex=True)
+fire_new['street'] = fire_new['street'].str.strip()
+fire_new['number'] = fire_new['number'].str.strip()
 
 #converting to date time and extracting year
-fireDate, fireTime = fire_historical['CALL_CREATED_DATE'].str.split(' ', 1).str
-fire_historical['CALL_CREATED_DATE']= fireDate
-fire_historical['CALL_CREATED_DATE'] = pd.to_datetime(fire_historical['CALL_CREATED_DATE'])
-fire_historical['fire_year'] = fire_historical['CALL_CREATED_DATE'].map(lambda x: x.year)
+fireDate, fireTime = fire_new['CALL_CREATED_DATE'].str.split(' ', 1).str
+fire_new['CALL_CREATED_DATE']= fireDate
+fire_new['CALL_CREATED_DATE'] = pd.to_datetime(fire_new['CALL_CREATED_DATE'])
+fire_new['fire_year'] = fire_new['CALL_CREATED_DATE'].map(lambda x: x.year)
 
 #removing all codes with less than 20 occurences
-for col,val in fire_historical['full.code'].value_counts().iteritems():
+for col,val in fire_new['full.code'].value_counts().iteritems():
     if val <20 and col[0]!= '1':
-        fire_historical = fire_historical[fire_historical['full.code'] != col]
+        fire_new = fire_new[fire_new['full.code'] != col]
 
-fire_historical = fire_historical.drop_duplicates()
+fire_new = fire_new.drop_duplicates()
 
 #joining plipca with fireincidents
-pcafire = pd.merge(plipca1, fire_historical, how = 'left', left_on =['PROPERTYADDRESS','PROPERTYHOUSENUM'],
+pcafire = pd.merge(plipca1, fire_new, how = 'left', left_on =['PROPERTYADDRESS','PROPERTYHOUSENUM'],
         right_on = ['street','number'])
 
 # making the fire column with all type 100s as fires
@@ -315,7 +295,7 @@ pcafire1 = pcafire1[pd.notnull(pcafire1.INSPECTION_DATE)]
 pcafire2 = pcafire1[(pcafire1.violation_year == pcafire1.fire_year)]
 
 #joining all rows with no pli violations
-fire_nopli = pd.concat([fire_historical, pcafire2[['number','street','CALL_CREATED_DATE','full.code','response_time','fire_year']], pcafire2[['number','street','CALL_CREATED_DATE','full.code','response_time','fire_year']]]).drop_duplicates(keep=False)
+fire_nopli = pd.concat([fire_new, pcafire2[['number','street','CALL_CREATED_DATE','full.code','response_time','fire_year']], pcafire2[['number','street','CALL_CREATED_DATE','full.code','response_time','fire_year']]]).drop_duplicates(keep=False)
 pcafire_nopli = pd.merge(pcafinal, fire_nopli, how = 'left', left_on =['PROPERTYADDRESS','PROPERTYHOUSENUM'],
         right_on = ['street','number'])
 
