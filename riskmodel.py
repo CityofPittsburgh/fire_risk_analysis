@@ -1,3 +1,16 @@
+#### Created as part of the Metro21 Fire Risk Analysis project
+#### In partnership with the City of Pittsburgh's Department of Innovation and Performance, and the Pittsburgh Bureau of Fire
+
+# Authors:
+#   Bhavkaran Singh
+#   Michael Madaio
+#   Qianyi Hu
+#   Nathan Kuo
+#   Palak Narang
+#   Jeffrey Chen
+#   Fangyan Chen
+
+
 #importing relevant libraries
 import pandas as pd
 import numpy as np
@@ -21,7 +34,8 @@ from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 from xgboost import XGBClassifier
 from sklearn.ensemble import ExtraTreesClassifier
-
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -331,9 +345,13 @@ ohe10 = pd.get_dummies(combined_df['INSPECTION_RESULT'])
 combined_df1 = pd.concat([combined_df[['PROPERTYADDRESS','PROPERTYHOUSENUM','CALL_CREATED_DATE','fire','fire_year']],ohe8,ohe9,ohe10], axis=1)
 
 
-#PREPARING THE TESTING DATA (6 months of data)
+#PREPARING THE TESTING DATA (final 6 months of data)
+cutoff = datetime.datetime.now() - relativedelta(months=6)
+cutoffdate = cutoff.strftime("%m/%d/%Y")
 
-testdata = combined_df1[combined_df1.CALL_CREATED_DATE > '12/01/2016']
+print cutoffdate
+
+testdata = combined_df1[combined_df1.CALL_CREATED_DATE > cutoffdate]
 testdata2 = testdata.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS",'CALL_CREATED_DATE','fire_year'] ).sum().reset_index()
 del testdata['CALL_CREATED_DATE']
 del testdata['fire_year']
@@ -364,6 +382,8 @@ muni_desc= test_data['MUNIDESC']
 neigh_desc= test_data['NEIGHCODE']
 tax_desc= test_data['TAXDESC']
 use_desc= test_data['USEDESC']
+address= test_data['PROPERTYADDRESS']
+housenum= test_data['PROPERTYHOUSENUM']
 
 #Deleting features not required anymore or already one hot encoded for the model
 del test_data['CALL_CREATED_DATE']
@@ -383,8 +403,8 @@ encoded_testdata = pd.concat([test_data,ohe1,ohe2,ohe3,ohe4,ohe5,ohe6,ohe7], axi
 
 #PREPARING THE TRAINING DATA
 
-#Everything till 1st May 2016 is training data
-traindata1 = combined_df1[combined_df1.CALL_CREATED_DATE <= '12/01/2016']
+#Everything till final 6-month period is training data
+traindata1 = combined_df1[combined_df1.CALL_CREATED_DATE <= cutoffdate]
 
 #Combining multiple instances of an address together
 traindata = traindata1.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS",'CALL_CREATED_DATE','fire_year'] ).sum().reset_index()
@@ -469,15 +489,15 @@ print 'precision = ',float(cm[1][1])/(cm[1][1]+cm[0][1])
 predictions = model.predict_proba(X_test)
 print predictions
 
-#addresses = test_data['PROPERTYHOUSENUM'] +' '+ test_data['PROPERTYADDRESS']
+addresses = housenum +' '+ address
 
 #Addresses with fire and risk score
 risk = []
 for row in predictions:
     risk.append(row[1])
 
-cols = {"Fire":pred,"RiskScore":risk,"state_desc":state_desc,"school_desc":school_desc,
-        "owner_desc":owner_desc,"muni_desc":muni_desc,"neigh_desc":neigh_desc,"tax_desc":tax_desc,"use_desc":use_desc} #"Address":addresses,
+cols = {"Address": addresses, "Fire":pred,"RiskScore":risk,"state_desc":state_desc,"school_desc":school_desc,
+        "owner_desc":owner_desc,"muni_desc":muni_desc,"neigh_desc":neigh_desc,"tax_desc":tax_desc,"use_desc":use_desc}
 
 Results = pd.DataFrame(cols)
 
