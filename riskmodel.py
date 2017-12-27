@@ -65,10 +65,11 @@ pittdata = pittdata.drop_duplicates()
 plipca = pd.merge(pittdata, plidata[['PARCEL','INSPECTION_DATE','INSPECTION_RESULT','VIOLATION']], how = 'left', left_on =['PARID'], right_on = ['PARCEL'] )
 plipca = plipca.drop_duplicates()
 
+
 #dropping nas
 newpli = plipca.dropna(subset =['PARCEL','INSPECTION_DATE','INSPECTION_RESULT','VIOLATION'] )
 newpli = newpli.reset_index()
-newpli = newpli.drop(['index','PARID','index',u'PROPERTYOWNER',
+newpli = newpli.drop(['index','PARID','index',
     u'PROPERTYCITY', u'PROPERTYSTATE', u'PROPERTYUNIT', u'PROPERTYZIP',
     u'MUNICODE', u'MUNIDESC', u'SCHOOLCODE', u'SCHOOLDESC', u'LEGAL1',
     u'LEGAL2', u'LEGAL3', u'NEIGHCODE',
@@ -150,6 +151,8 @@ idx = temp.groupby([ "PROPERTYHOUSENUM", "PROPERTYADDRESS"])['count'].transform(
 result8 = temp[idx]
 result8 = result8.drop_duplicates(subset=[ "PROPERTYHOUSENUM", "PROPERTYADDRESS"], keep = 'last')
 del result8['count']
+
+
 
 dfs = [result1,result2,result3,result4,result6,result7,result8,numerical]
 
@@ -350,7 +353,6 @@ combined_df1 = pd.concat([combined_df[['PROPERTYADDRESS','PROPERTYHOUSENUM','CAL
 cutoff = datetime.datetime.now() - relativedelta(months=6)
 cutoffdate = cutoff.strftime("%m/%d/%Y")
 
-print cutoffdate
 
 testdata = combined_df1[combined_df1.CALL_CREATED_DATE > cutoffdate]
 testdata2 = testdata.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS",'CALL_CREATED_DATE','fire_year'] ).sum().reset_index()
