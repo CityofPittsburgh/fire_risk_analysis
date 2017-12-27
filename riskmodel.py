@@ -43,9 +43,9 @@ from dateutil.relativedelta import relativedelta
 pd.options.mode.chained_assignment = None  # default='warn'
 
 # Reading plidata
-plidata = pd.read_csv('datasets/pli.csv',encoding = 'utf-8',dtype={'STREET_NUM':'str','STREET_NAME':'str'}, low_memory=False)
+plidata = pd.read_csv('/home/linadmin/FirePred/datasets/pli.csv',encoding = 'utf-8',dtype={'STREET_NUM':'str','STREET_NAME':'str'}, low_memory=False)
 #Reading city of Pittsburgh dataset
-pittdata = pd.read_csv('datasets/pittdata.csv',dtype={'PROPERTYADDRESS':'str','PROPERTYHOUSENUM':'str','STATEDESC':'str'}, low_memory=False)
+pittdata = pd.read_csv('/home/linadmin/FirePred/datasets/pittdata.csv',dtype={'PROPERTYADDRESS':'str','PROPERTYHOUSENUM':'str','STATEDESC':'str'}, low_memory=False)
 
 #removing extra whitespaces
 plidata['STREET_NAME'] = plidata['STREET_NAME'].str.strip()
@@ -157,7 +157,7 @@ pcafinal = reduce(lambda left,right: pd.merge(left,right,on= [ "PROPERTYHOUSENUM
 plipca1 = pd.merge(pcafinal, newpli, how = 'left', left_on =[ "PROPERTYHOUSENUM", "PROPERTYADDRESS"], right_on = [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] )
 
 #loading fire incidents csvs
-fire_pre14 = pd.read_csv('datasets/Fire_Incidents_Pre14.csv',encoding = 'latin-1',dtype={'street':'str','number':'str'}, low_memory=False)
+fire_pre14 = pd.read_csv('/home/linadmin/FirePred/datasets/Fire_Incidents_Pre14.csv',encoding = 'latin-1',dtype={'street':'str','number':'str'}, low_memory=False)
 
 #cleaning columns of fire_pre14
 fire_pre14['full.code'] = fire_pre14['full.code'].str.replace('  -',' -')
@@ -168,7 +168,7 @@ fire_pre14['st_type'] = fire_pre14['st_type'].str.replace('AV','AVE')
 fire_pre14['street'] = fire_pre14['street'].str.strip() +' ' +fire_pre14['st_type'].str.strip()
 
 #reading the fire_historicalfile
-fire_new = pd.read_csv('datasets/Fire_Incidents_New.csv',encoding = 'utf-8',dtype={'street':'str','number':'str'}, low_memory=False)
+fire_new = pd.read_csv('/home/linadmin/FirePred/datasets/Fire_Incidents_New.csv',encoding = 'utf-8',dtype={'street':'str','number':'str'}, low_memory=False)
 
 #deleting columns not required
 del fire_new['alm_dttm']
@@ -502,7 +502,7 @@ cols = {"Address": addresses, "Fire":pred,"RiskScore":risk,"state_desc":state_de
 Results = pd.DataFrame(cols)
 
 #Writing results as a csv
-Results.to_csv('datasets/Results.csv')
+Results.to_csv('/home/linadmin/FirePred/datasets/Results.csv')
 
 #Plotting the ROC curve
 plt.title('Receiver Operating Characteristic')

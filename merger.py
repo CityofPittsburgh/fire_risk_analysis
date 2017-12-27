@@ -3,7 +3,7 @@ __author__ = 'mmadaio'
 import pandas as pd
 
 # Set input and output folders
-input = "datasets/"
+input = "/home/linadmin/FirePred/datasets/"
 output = "/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/"
 
 # Read fire risk data
