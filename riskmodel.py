@@ -45,14 +45,14 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # Reading plidata
 plidata = pd.read_csv('datasets/pli.csv',encoding = 'utf-8',dtype={'STREET_NUM':'str','STREET_NAME':'str'}, low_memory=False)
 #Reading city of Pittsburgh dataset
-pittdata = pd.read_csv('datasets/pittdata.csv',dtype={'PROPERTYADDRESS':'str','PROPERTYHOUSENUM':'str','STATEDESC':'str'}, low_memory=False)
+pittdata = pd.read_csv('datasets/pittdata.csv',dtype={'PROPERTYADDRESS':'str','PROPERTYHOUSENUM':'str','CLASSDESC':'str'}, low_memory=False)
 
 #removing extra whitespaces
 plidata['STREET_NAME'] = plidata['STREET_NAME'].str.strip()
 plidata['STREET_NUM'] = plidata['STREET_NUM'].str.strip()
 
 #removing residential data
-pittdata = pittdata[pittdata.STATEDESC!='RESIDENTIAL']
+pittdata = pittdata[pittdata.CLASSDESC!='RESIDENTIAL']
 pittdata = pittdata[pittdata.PROPERTYHOUSENUM!= '0']
 pittdata = pittdata[pittdata.PROPERTYADDRESS!= '']
 
@@ -65,17 +65,19 @@ pittdata = pittdata.drop_duplicates()
 plipca = pd.merge(pittdata, plidata[['PARCEL','INSPECTION_DATE','INSPECTION_RESULT','VIOLATION']], how = 'left', left_on =['PARID'], right_on = ['PARCEL'] )
 plipca = plipca.drop_duplicates()
 
+
 #dropping nas
 newpli = plipca.dropna(subset =['PARCEL','INSPECTION_DATE','INSPECTION_RESULT','VIOLATION'] )
 newpli = newpli.reset_index()
-newpli = newpli.drop(['index','PARID','index',u'PROPERTYOWNER',
+newpli = newpli.drop(['index','PARID','index',
     u'PROPERTYCITY', u'PROPERTYSTATE', u'PROPERTYUNIT', u'PROPERTYZIP',
-    u'MUNICODE', u'MUNIDESC', u'SCHOOLCODE', u'SCHOOLDESC', u'NEIGHCODE',
-    u'TAXCODE', u'TAXDESC', u'OWNERCODE', u'OWNERDESC', u'STATECODE',
-    u'STATEDESC', u'USECODE', u'USEDESC', u'LOTAREA', u'SALEDATE',
+    u'MUNICODE', u'MUNIDESC', u'SCHOOLCODE', u'SCHOOLDESC', u'LEGAL1',
+    u'LEGAL2', u'LEGAL3', u'NEIGHCODE',
+    u'TAXCODE', u'TAXDESC',
+    u'OWNERCODE', u'OWNERDESC', u'CLASS',
+    u'CLASSDESC', u'USECODE', u'USEDESC', u'LOTAREA', u'SALEDATE',
     u'SALEPRICE', u'SALECODE', u'SALEDESC', u'DEEDBOOK', u'DEEDPAGE',
-    u'AGENT', u'TAXFULLADDRESS1', u'TAXFULLADDRESS2', u'TAXFULLADDRESS3',
-    u'TAXFULLADDRESS4', u'CHANGENOTICEADDRESS1', u'CHANGENOTICEADDRESS2',
+    u'CHANGENOTICEADDRESS1', u'CHANGENOTICEADDRESS2',
     u'CHANGENOTICEADDRESS3', u'CHANGENOTICEADDRESS4', u'COUNTYBUILDING',
     u'COUNTYLAND', u'COUNTYTOTAL', u'COUNTYEXEMPTBLDG', u'LOCALBUILDING',
     u'LOCALLAND', u'LOCALTOTAL', u'FAIRMARKETBUILDING', u'FAIRMARKETLAND',
@@ -95,13 +97,13 @@ numerical = plipca.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] , as_index=
     'FAIRMARKETBUILDING']].mean()
 
 # Following blocks of code group by address and get the category with maximum count for each given categorical columns
-temp = pd.DataFrame({'count' : plipca.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] ).STATEDESC.value_counts()}).reset_index()
+temp = pd.DataFrame({'count' : plipca.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] ).CLASSDESC.value_counts()}).reset_index()
 idx = temp.groupby([ "PROPERTYHOUSENUM", "PROPERTYADDRESS"])['count'].transform(max) == temp['count']
 result1 = temp[idx]
 result1 = result1.drop_duplicates(subset=[ "PROPERTYHOUSENUM", "PROPERTYADDRESS"], keep = 'last')
 del result1['count']
 
-temp = pd.DataFrame({'count' : plipca.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] ).STATEDESC.value_counts()}).reset_index()
+temp = pd.DataFrame({'count' : plipca.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] ).CLASSDESC.value_counts()}).reset_index()
 temp.groupby([ "PROPERTYHOUSENUM", "PROPERTYADDRESS"])['count'].transform(max)
 idx = temp.groupby([ "PROPERTYHOUSENUM", "PROPERTYADDRESS"])['count'].transform(max) == temp['count']
 result1 = temp[idx]
@@ -149,6 +151,8 @@ idx = temp.groupby([ "PROPERTYHOUSENUM", "PROPERTYADDRESS"])['count'].transform(
 result8 = temp[idx]
 result8 = result8.drop_duplicates(subset=[ "PROPERTYHOUSENUM", "PROPERTYADDRESS"], keep = 'last')
 del result8['count']
+
+
 
 dfs = [result1,result2,result3,result4,result6,result7,result8,numerical]
 
@@ -349,7 +353,6 @@ combined_df1 = pd.concat([combined_df[['PROPERTYADDRESS','PROPERTYHOUSENUM','CAL
 cutoff = datetime.datetime.now() - relativedelta(months=6)
 cutoffdate = cutoff.strftime("%m/%d/%Y")
 
-print cutoffdate
 
 testdata = combined_df1[combined_df1.CALL_CREATED_DATE > cutoffdate]
 testdata2 = testdata.groupby( [ "PROPERTYHOUSENUM", "PROPERTYADDRESS",'CALL_CREATED_DATE','fire_year'] ).sum().reset_index()
@@ -367,7 +370,7 @@ test_data = pd.merge(testdata2,pcafinal, on = ["PROPERTYHOUSENUM", "PROPERTYADDR
 #test_data.fire.value_counts()
 
 #One hot encoding the features for the test set
-ohe1 = pd.get_dummies(test_data['STATEDESC'])
+ohe1 = pd.get_dummies(test_data['CLASSDESC'])
 ohe2 = pd.get_dummies(test_data['SCHOOLDESC'])
 ohe3 = pd.get_dummies(test_data['OWNERDESC'])
 ohe4 = pd.get_dummies(test_data['MUNIDESC'])
@@ -375,7 +378,7 @@ ohe5 = pd.get_dummies(test_data['NEIGHCODE'])
 ohe6 = pd.get_dummies(test_data['TAXDESC'])
 ohe7 = pd.get_dummies(test_data['USEDESC'])
 
-state_desc = test_data['STATEDESC']
+state_desc = test_data['CLASSDESC']
 school_desc= test_data['SCHOOLDESC']
 owner_desc= test_data['OWNERDESC']
 muni_desc= test_data['MUNIDESC']
@@ -387,7 +390,7 @@ housenum= test_data['PROPERTYHOUSENUM']
 
 #Deleting features not required anymore or already one hot encoded for the model
 del test_data['CALL_CREATED_DATE']
-del test_data['STATEDESC']
+del test_data['CLASSDESC']
 del test_data['SCHOOLDESC']
 del test_data['OWNERDESC']
 del test_data['MUNIDESC']
@@ -419,7 +422,7 @@ train_data = pd.merge(traindata,pcafinal, on = ["PROPERTYHOUSENUM", "PROPERTYADD
 #train_data.fire.value_counts()
 
 #creating on hot encoded features for the categorical values
-ohe1 = pd.get_dummies(train_data['STATEDESC'])
+ohe1 = pd.get_dummies(train_data['CLASSDESC'])
 ohe2 = pd.get_dummies(train_data['SCHOOLDESC'])
 ohe3 = pd.get_dummies(train_data['OWNERDESC'])
 ohe4 = pd.get_dummies(train_data['MUNIDESC'])
@@ -428,7 +431,7 @@ ohe6 = pd.get_dummies(train_data['TAXDESC'])
 ohe7 = pd.get_dummies(train_data['USEDESC'])
 
 #deleting the categories
-del train_data['STATEDESC']
+del train_data['CLASSDESC']
 del train_data['CALL_CREATED_DATE']
 del train_data['SCHOOLDESC']
 del train_data['OWNERDESC']
