@@ -12,6 +12,9 @@
 
 
 #importing relevant libraries
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
 import sqlalchemy as sa
@@ -482,11 +485,31 @@ kappa = cohen_kappa_score(real, pred)
 fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
 roc_auc = metrics.auc(fpr, tpr)
 
-print 'Accuracy = ', float(cm[0][0] + cm[1][1])/len(real)
-print 'kappa score = ', kappa
-print 'AUC Score = ', metrics.auc(fpr, tpr)
-print 'recall = ',tpr[1]
-print 'precision = ',float(cm[1][1])/(cm[1][1]+cm[0][1])
+acc = 'Accuracy = ', float(cm[0][0] + cm[1][1])/len(real)
+kapp = 'kappa score = ', kappa
+auc = 'AUC Score = ', metrics.auc(fpr, tpr)
+recall = 'recall = ',tpr[1]
+precis = 'precision = ',float(cm[1][1])/(cm[1][1]+cm[0][1])
+
+print acc
+print kapp
+print auc
+print recall
+print precis
+
+### Write model performance to log file:
+
+log_path = "/home/linadmin/FirePred/logs/"
+
+with open('{0}ModelPerformance_{1}.txt'.format(log_path, datetime.datetime.now()), 'a') as log_file:
+    log_file.write(cm)
+    log_file.write(acc)
+    log_file.write(kapp)
+    log_file.write(auc)
+    log_file.write(recall)
+    log_file.write(precis)
+
+
 
 #Getting the probability scores
 predictions = model.predict_proba(X_test)
@@ -504,8 +527,13 @@ cols = {"Address": addresses, "Fire":pred,"RiskScore":risk,"state_desc":state_de
 
 Results = pd.DataFrame(cols)
 
-#Writing results as a csv
+#Writing results to the updating Results.csv
 Results.to_csv('/home/linadmin/FirePred/datasets/Results.csv')
+
+
+# Writing results to a log file
+Results.to_csv('{0}Results_{1}.csv'.format(log_path, datetime.datetime.now()))
+
 
 #Plotting the ROC curve
 plt.title('Receiver Operating Characteristic')
@@ -517,7 +545,11 @@ plt.xlim([-0.1,1.2])
 plt.ylim([-0.1,1.2])
 plt.ylabel('True Positive Rate')
 plt.xlabel('False Positive Rate')
-plt.show()
+#plt.show()
+
+png_path = "/home/linadmin/FirePred/images/"
+roc_png = "{0}ROC_{1}.png".format(png_path, datetime.datetime.now())
+plt.savefig(roc_png, dpi=150)
 
 #Tree model for getting features importance
 clf = ExtraTreesClassifier()
@@ -538,4 +570,8 @@ plt.xticks(y_pos, important_features.index[0:20], rotation = (90), fontsize = 11
 plt.ylabel('Feature Importance Scores')
 plt.title('Feature Importance')
 
-plt.show()
+png_path = "images/"
+features_png = "{0}FeatureImportance_{1}.png".format(png_path, datetime.datetime.now())
+plt.savefig(features_png, dpi=150)
+
+#plt.show()
