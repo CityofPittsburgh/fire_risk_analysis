@@ -570,7 +570,6 @@ plt.xticks(y_pos, important_features.index[0:20], rotation = (90), fontsize = 11
 plt.ylabel('Feature Importance Scores')
 plt.title('Feature Importance')
 
-png_path = "images/"
 features_png = "{0}FeatureImportance_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(features_png, dpi=150)
 
