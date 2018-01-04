@@ -485,17 +485,19 @@ kappa = cohen_kappa_score(real, pred)
 fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
 roc_auc = metrics.auc(fpr, tpr)
 
-acc = 'Accuracy = ', float(cm[0][0] + cm[1][1])/len(real)
-kapp = 'kappa score = ', kappa
-auc = 'AUC Score = ', metrics.auc(fpr, tpr)
-recall = 'recall = ',tpr[1]
-precis = 'precision = ',float(cm[1][1])/(cm[1][1]+cm[0][1])
+acc = 'Accuracy = {0}'.format(float(cm[0][0] + cm[1][1])/len(real))
+kapp = 'kappa score = {0}'.format(kappa)
+auc = 'AUC Score = {0}'.format(metrics.auc(fpr, tpr))
+recall = 'recall = {0}'.format(tpr[1])
+precis = 'precision = {0}'.format(float(cm[1][1])/(cm[1][1]+cm[0][1]))
 
 print acc
 print kapp
 print auc
 print recall
 print precis
+
+
 
 ### Write model performance to log file:
 
