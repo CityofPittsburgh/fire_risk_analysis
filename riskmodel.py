@@ -485,11 +485,11 @@ kappa = cohen_kappa_score(real, pred)
 fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
 roc_auc = metrics.auc(fpr, tpr)
 
-acc = 'Accuracy = {0}'.format(float(cm[0][0] + cm[1][1])/len(real))
-kapp = 'kappa score = {0}'.format(kappa)
-auc = 'AUC Score = {0}'.format(metrics.auc(fpr, tpr))
-recall = 'recall = {0}'.format(tpr[1])
-precis = 'precision = {0}'.format(float(cm[1][1])/(cm[1][1]+cm[0][1]))
+acc = 'Accuracy = {0} \n \n'.format(float(cm[0][0] + cm[1][1])/len(real))
+kapp = 'kappa score = {0} \n \n'.format(kappa)
+auc = 'AUC Score = {0} \n \n'.format(metrics.auc(fpr, tpr))
+recall = 'recall = {0} \n \n'.format(tpr[1])
+precis = 'precision = {0} \n \n'.format(float(cm[1][1])/(cm[1][1]+cm[0][1]))
 
 print acc
 print kapp
@@ -504,7 +504,10 @@ print precis
 log_path = "/home/linadmin/FirePred/logs/"
 
 with open('{0}ModelPerformance_{1}.txt'.format(log_path, datetime.datetime.now()), 'a') as log_file:
-    log_file.write(cm)
+    log_file.write("Confusion Matrix: \n \n")
+    for item in cm:
+        print>>log_file, item
+    log_file.write("Model performance metrics: \n \n")
     log_file.write(acc)
     log_file.write(kapp)
     log_file.write(auc)
@@ -552,11 +555,18 @@ plt.xlabel('False Positive Rate')
 png_path = "/home/linadmin/FirePred/images/"
 roc_png = "{0}ROC_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(roc_png, dpi=150)
+plt.clf()   # Clear figure
 
 #Tree model for getting features importance
 clf = ExtraTreesClassifier()
-clf = clf.fit(X_train, y_train)
-clf.feature_importances_
+imputed_fireVarTrain = fireVarTrain.fillna(method="ffill")
+imputed_encoded_traindata = encoded_traindata.fillna(method="ffill")
+
+impute_X = np.array(imputed_encoded_traindata)
+impute_y = np.reshape(imputed_fireVarTrain.values,[imputed_fireVarTrain.shape[0],])
+
+clf = clf.fit(impute_X, impute_y)
+
 
 UsedDf = encoded_traindata
 important_features = pd.Series(data=clf.feature_importances_,index=UsedDf.columns)
@@ -572,7 +582,13 @@ plt.xticks(y_pos, important_features.index[0:20], rotation = (90), fontsize = 11
 plt.ylabel('Feature Importance Scores')
 plt.title('Feature Importance')
 
-features_png = "{0}FeatureImportance_{1}.png".format(png_path, datetime.datetime.now())
+
+features_png = "{0}FeatureImportancePlot_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(features_png, dpi=150)
+plt.clf()
+
+important_features[0:50].to_csv('{0}FeatureImportanceList_{1}.csv'.format(log_path, datetime.datetime.now()))
+
+
 
 #plt.show()
