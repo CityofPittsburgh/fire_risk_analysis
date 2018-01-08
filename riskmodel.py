@@ -501,7 +501,7 @@ print precis
 
 ### Write model performance to log file:
 
-log_path = "/home/linadmin/FirePred/logs/"
+log_path = "/home/linadmin/FirePred/log/"
 
 with open('{0}ModelPerformance_{1}.txt'.format(log_path, datetime.datetime.now()), 'a') as log_file:
     log_file.write("Confusion Matrix: \n \n")
