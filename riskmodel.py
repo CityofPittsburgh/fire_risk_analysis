@@ -50,7 +50,11 @@ plidata = pd.read_csv('/home/linadmin/FirePred/datasets/pli.csv',encoding = 'utf
 #Reading city of Pittsburgh dataset
 pittdata = pd.read_csv('/home/linadmin/FirePred/datasets/pittdata.csv',dtype={'PROPERTYADDRESS':'str','PROPERTYHOUSENUM':'str','CLASSDESC':'str'}, low_memory=False)
 
-#removing extra whitespaces
+
+#removing all properties outside Pittsburgh, Wilkinsburg, and Ingram
+pittdata = pittdata[(pittdata.PROPERTYCITY == 'Pittsburgh') & (pittdata.PROPERTYCITY == 'Wilkinsburg') & (pittdata.PROPERTYCITY == 'Ingram')]
+
+# #removing extra whitespaces
 plidata['STREET_NAME'] = plidata['STREET_NAME'].str.strip()
 plidata['STREET_NUM'] = plidata['STREET_NUM'].str.strip()
 
@@ -58,6 +62,8 @@ plidata['STREET_NUM'] = plidata['STREET_NUM'].str.strip()
 pittdata = pittdata[pittdata.CLASSDESC!='RESIDENTIAL']
 pittdata = pittdata[pittdata.PROPERTYHOUSENUM!= '0']
 pittdata = pittdata[pittdata.PROPERTYADDRESS!= '']
+
+
 
 #dropping columns with less than 15% data
 pittdata = pittdata.dropna(thresh=4000, axis=1)
@@ -183,7 +189,6 @@ del fire_new['arv_dttm']
 del fire_new['XCOORD']
 del fire_new['YCOORD']
 del fire_new['alarms']
-del fire_new['inci_type']
 del fire_new['CALL_NO']
 del fire_pre14['PRIMARY_UNIT']
 del fire_pre14['MAP_PAGE']
@@ -328,7 +333,6 @@ pcafire_nopli['full.code'][pcafire_nopli['fire'] == 'fire'] = None
 #combined_df is the final file
 combined_df  = pcafire_nopli.append(pcafire2, ignore_index=True)
 
-#combined_df.to_csv('datasets/Final_Combined_Df.csv')
 
 
 
