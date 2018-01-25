@@ -1,5 +1,5 @@
 # Fire Risk Analysis
-This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](https://michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf).
+This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](http://michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf).
 
 ### Authors: 
 * Michael Madaio
