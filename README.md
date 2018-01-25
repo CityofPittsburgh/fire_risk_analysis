@@ -3,12 +3,11 @@ This is a set of scripts for a machine learning pipeline to predict structure fi
 
 ### Authors: 
 * Michael Madaio
-  
-### Collaborators:
 * Geoffrey Arnold
 * Bhavkaran Singh
-* Jason Batts
 * Qianyi Hu
+* Jason Batts
+
 
 ## Run_Model.sh
 Runs all three python scripts listed below in succession.
