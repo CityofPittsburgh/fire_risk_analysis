@@ -1,5 +1,5 @@
 # Fire Risk Analysis
-This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf).
+This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](https://michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf).
 
 ### Authors: 
 * Michael Madaio
@@ -15,7 +15,7 @@ Runs all three python scripts listed below in succession.
 
 ## getdata.py
 
-Scrapes [WPRDC](wprdc.org) for:
+Scrapes [WPRDC](https://wprdc.org) for:
 * City of Pittsburgh property data ("pittdata.csv")
 * City of Pittsburgh parcel data ("parcels.csv")
 * Permits, Licenses, and Inspections data ("pli.csv")
