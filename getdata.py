@@ -9,13 +9,13 @@ property_url = "https://data.wprdc.org/dataset/2b3df818-601e-4f06-b150-643557229
 parcel_url = "https://data.wprdc.org/dataset/2536e5e2-253b-4c58-969d-687828bb94c6/resource/4b68a6dd-b7ea-4385-b88e-e7d77ff0b294/download/parcelcentroidaug102016.csv"
 
 pli_response = requests.get(pli_url)
-with open(os.path.join("\\datasets", "pli.csv"), 'wb') as f:
+with open("/home/linadmin/FirePred/datasets/pli.csv", 'wb') as f:
     f.write(pli_response.content)
 
 property_response = requests.get(property_url)
-with open(os.path.join("\\datasets/", "pittdata.csv"), 'wb') as f:
+with open("/home/linadmin/FirePred/datasets/pittdata.csv", 'wb') as f:
     f.write(property_response.content)
 
 parcel_response = requests.get(parcel_url)
-with open(os.path.join("\\datasets", "parcels.csv"), 'wb') as f:
+with open("/home/linadmin/FirePred/datasets/parcels.csv", 'wb') as f:
     f.write(parcel_response.content)
