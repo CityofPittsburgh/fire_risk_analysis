@@ -48,8 +48,12 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 # =============================#1: CLEAN PLI & PITT DATA========================
 # create directory paths for opening files
-curr_path = os.path.dirname(os.path.realpath(__file__))
-dataset_path = os.path.join(curr_path, "datasets/")
+#curr_path = os.path.dirname(os.path.realpath(__file__))
+
+root = "/home/linadmin/FirePred/"
+dataset_path = "{0}datasets/".format(root)
+log_path = "{0}log/".format(root)
+png_path = "{0}images/".format(root)
 
 # Reading plidata
 plidata = pd.read_csv(os.path.join(dataset_path, "pli.csv"),encoding = 'utf-8',dtype={'STREET_NUM':'str','STREET_NAME':'str'}, low_memory=False)
@@ -455,7 +459,6 @@ print precis
 
 
 ### Write model performance to log file:
-log_path = os.path.join(curr_path, "log/")
 
 with open('{0}ModelPerformance_{1}.txt'.format(log_path, datetime.datetime.now()), 'a') as log_file:
     log_file.write("Confusion Matrix: \n \n")
@@ -507,7 +510,6 @@ plt.xlabel('False Positive Rate')
 #plt.show()
 
 
-png_path = os.path.join(curr_path, "images/")
 roc_png = "{0}ROC_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(roc_png, dpi=150)
 plt.clf()   # Clear figure
