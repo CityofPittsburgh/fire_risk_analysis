@@ -6,6 +6,7 @@ This is a set of scripts for a machine learning pipeline to predict structure fi
 * Geoffrey Arnold
 * Bhavkaran Singh
 * Qianyi Hu
+* Nathan Kuo
 * Jason Batts
 
 
