@@ -1,14 +1,5 @@
 # Fire Risk Analysis
-This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](http://michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf).
-
-### Authors: 
-* Michael Madaio
-* Geoffrey Arnold
-* Bhavkaran Singh
-* Qianyi Hu
-* Nathan Kuo
-* Jason Batts
-
+This is a set of scripts for a machine learning pipeline to predict structure fire risk and inform fire inspection prioritization decisions. A full technical report can be found [here](http://michaelmadaio.com/Metro21_FireRisk_FinalReport.pdf). 
 
 ## Run_Model.sh
 Runs all three python scripts listed below in succession.
@@ -24,7 +15,7 @@ Scrapes [WPRDC](https://wprdc.org) for:
 
 Runs the risk prediction model, using:
 * the three datasets from WPRDC
-* Fire Incident data from PBF (public, aggregated version available at [WPRDC](https://data.wprdc.org/dataset/fire-incidents-in-city-of-pittsburgh).
+* Fire Incident data from PBF (public, aggregated version available at [WPRDC](https://data.wprdc.org/dataset/fire-incidents-in-city-of-pittsburgh). However, please note that due to privacy concerns, the most detailed fire incident data that the model is trained on are not publicly accessible, but the aggregated version of the incident data is available, at the block-level, instead of the address-level. At the moment, this script is not able to run on the aggregated, block-level data.
 
 ## merger.py
 
@@ -36,4 +27,14 @@ Takes the output of the risk scores, merged with property data, and visualizes t
 
 ## requirements.txt
 
-All of the packages you'll need to install for the scripts to run
+All of the packages you'll need to install for the scripts to run.
+
+
+### Authors: 
+* Michael Madaio
+* Geoffrey Arnold
+* Bhavkaran Singh
+* Qianyi Hu
+* Nathan Kuo
+* Jason Batts
+
