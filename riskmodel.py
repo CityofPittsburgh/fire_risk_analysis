@@ -421,8 +421,7 @@ y_test = np.reshape(fireVarTest.values,[fireVarTest.shape[0],])
 
 # =========================== #5 MODEL & PREDICTION =============================
 #The XG Boost model
-#Grid Search was taking too long a time to run hence did hyperparameter tuning manually and arrived
-#at the below parameters fiving the most optimal result
+
 model = XGBClassifier( learning_rate =0.13,
         n_estimators=1500,
         max_depth=5,min_child_weight=1,
@@ -514,7 +513,7 @@ roc_png = "{0}ROC_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(roc_png, dpi=150)
 plt.clf()   # Clear figure
 
-#Tree model for getting features importance
+#Tree model for getting feature importance
 clf = ExtraTreesClassifier()
 imputed_fireVarTrain = fireVarTrain.fillna(method="ffill")
 imputed_encoded_traindata = encoded_traindata.fillna(method="ffill")
