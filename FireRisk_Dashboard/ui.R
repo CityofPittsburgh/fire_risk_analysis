@@ -11,6 +11,9 @@
 library(shiny)
 library(markdown)
 
+# read data  
+model <- read.csv("fire_risk_nonres.csv")   
+
 shinyUI(fluidPage(
   # sidebar
   

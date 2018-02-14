@@ -20,7 +20,7 @@ library(plotly)
 shinyServer(function(input, output) {
   
   # read data  
-  model <- read.csv("data/fire_risk_nonres.csv")   
+  model <- read.csv("fire_risk_nonres.csv")   
 
   model$Score <- ceiling(model$RiskScore*10)
   print(model$Pgh_FireDistrict)
