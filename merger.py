@@ -3,10 +3,10 @@ __author__ = 'mmadaio'
 import pandas as pd
 
 # Set input and output folders
-output = "/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/"
+# output = "/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/"
 
 # Read fire risk data
-risk = pd.read_csv(open('/home/linadmin/FirePred/datasets/Results.csv','rU'), low_memory = False)
+risk = pd.read_csv('/home/linadmin/FirePred/datasets/Results.csv', low_memory = False)
 
 # Read City of Pittsburgh property data
 pitt = pd.read_csv("/home/linadmin/FirePred/datasets/pittdata.csv", low_memory = False)
@@ -29,4 +29,4 @@ del pitt_risk['Unnamed: 0']
 pitt_risk_parcels = pd.merge(left=pitt_risk,right=parcels, how='left', left_on='PARID', right_on='PIN')
 
 # Output to csv
-pitt_risk_parcels.to_csv("{0}fire_risk_nonres.csv".format(output), index=False)
+pitt_risk_parcels.to_csv("/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/fire_risk_nonres.csv", index=False)
