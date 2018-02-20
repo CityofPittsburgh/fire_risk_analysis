@@ -35,12 +35,12 @@ from sklearn_pandas import DataFrameMapper
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
-from xgboost import XGBClassifier
+# from xgboost import XGBClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 import datetime
 from dateutil.relativedelta import relativedelta
 import os
-
+import xgboost as xgb
 
 
 # Turn off pandas chained assignment warning
