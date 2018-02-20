@@ -16,11 +16,10 @@ library(dplyr)
 library(plotly)
 
 
-
 shinyServer(function(input, output) {
   
   # read data  
-  model <- read.csv("data/fire_risk_nonres.csv")   
+  model <- read.csv("fire_risk_nonres.csv")   
 
   model$Score <- ceiling(model$RiskScore*10)
   print(model$Pgh_FireDistrict)
@@ -35,12 +34,12 @@ shinyServer(function(input, output) {
 
     # filter by property type (STATEDESC)
     if (!("All Classification Types" %in% input$property)){
-      d <- subset(d, subset=(STATEDESC %in% input$property))
+      d <- subset(d, subset=(state_desc %in% input$property))
     }
     
     # filter by usage type (USEDESC)
     if (!("All Usage Types" %in% input$use)) {
-      d <- subset(d, subset=(USEDESC %in% input$use))
+      d <- subset(d, subset=(use_desc %in% input$use))
     }
     
     # filter by neighborhood (NEIGHDESC)
@@ -61,11 +60,11 @@ shinyServer(function(input, output) {
   plot_Vis <- reactive({
     
       if (input$xvar == "Property Classification") {
-        x_axis <- "STATEDESC"
+        x_axis <- "state_desc"
       } else if (input$xvar == "Property Usage Type") {
-        x_axis <- "USEDESC"
+        x_axis <- "use_desc"
       } else if (input$xvar == "Neighborhood") {
-        x_axis <- "hood_x"
+        x_axis <- "geo_name_nhood"
       }
       
       if (input$yvar == "Fire Risk Scores") {
@@ -127,11 +126,11 @@ shinyServer(function(input, output) {
     if (input$yvar == "Fire Risk Scores") {
       
         if (input$xvar == "Property Classification") {
-          x_axis <- "STATEDESC"
+          x_axis <- "state_desc"
         } else if (input$xvar == "Property Usage Type") {
-          x_axis <- "USEDESC"
+          x_axis <- "use_desc"
         } else if (input$xvar == "Neighborhood") {
-          x_axis <- "hood_x"
+          x_axis <- "geo_name_nhood"
         } else if (input$xvar == "Fire District") {
           x_axis <- "Pgh_FireDistrict"
         } 

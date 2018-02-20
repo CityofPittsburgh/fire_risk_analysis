@@ -34,5 +34,4 @@ pitt_risk_parcels = pd.merge(left=pitt_risk,right=parcels, how='left', left_on='
 pitt_risk_parcels = pitt_risk_parcels[pitt_risk_parcels['MUNIDESC'].str.contains("Ward|Ingram|Wilkinsburg",na=False)]
 
 # Output to csv
-
 pitt_risk_parcels.to_csv("/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/fire_risk_nonres.csv", index=False)

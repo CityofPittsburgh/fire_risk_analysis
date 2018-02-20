@@ -32,7 +32,7 @@ shinyUI(fluidPage(
       
       selectInput("property",
                   label = "Filter by property type",
-                  choices = c("All Classification Types",as.vector(sort(unique(model$STATEDESC)))),
+                  choices = c("All Classification Types",as.vector(sort(unique(model$CLASSDESC)))),
                   selected = "All Classification Types",
                   multiple=TRUE),
       selectInput("use",
