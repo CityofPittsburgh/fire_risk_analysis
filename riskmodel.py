@@ -62,8 +62,9 @@ pittdata = pd.read_csv(os.path.join(dataset_path, "pittdata.csv"),dtype={'PROPER
 
 
 #removing all properties outside Pittsburgh, Wilkinsburg, and Ingram
-#pittdata = pittdata[(pittdata.PROPERTYCITY == 'Pittsburgh') & (pittdata.PROPERTYCITY == 'Wilkinsburg') & (pittdata.PROPERTYCITY == 'Ingram')]
-pittdata = pittdata[(pittdata.PROPERTYCITY == 'PITTSBURGH')]# & (pittdata.PROPERTYCITY == 'WILKINSBURG') & (pittdata.PROPERTYCITY == 'INGRAM')]
+pittdata = pittdata[(pittdata.PROPERTYCITY == 'PITTSBURGH')]
+pittdata = pittdata[pittdata['MUNIDESC'].str.contains("Ward|Ingram|Wilkinsburg")]
+
 
 #removing extra whitespaces
 plidata['STREET_NAME'] = plidata['STREET_NAME'].str.strip()
@@ -421,21 +422,114 @@ y_test = np.reshape(fireVarTest.values,[fireVarTest.shape[0],])
 
 # =========================== #5 MODEL & PREDICTION =============================
 #The XG Boost model
+#
+# ### C: 10
+#  ### gamma: 1
+# tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],
+#                  'C': [1, 10, 100, 1000]},
+#                {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
+# Cs = [1,10]
+# gammas = [0.001, 0.01, 0.1, 1]
+# param_grid = {'C': Cs, 'gamma' : gammas}
+# grid_search = GridSearchCV(model, param_grid, cv=3)
+# grid_search.fit(X_train, Y_train)
+# tuned_parameters = grid_search.best_params_
+#  #print grid_search.best_params_
+#
+# scores = ['precision', 'recall', 'accuracy','AUC']
+#
+# for score in scores:
+#  print("# Tuning hyper-parameters for %s" % score)
+#  print()
+#
+#  clf = GridSearchCV(XGBClassifier(C=1), tuned_parameters, cv=3,
+#                     scoring='%s_macro' % score)
+#  clf.fit(X_train, Y_train)
+#
+#  # print("Best parameters set found on development set:")
+#  # print()
+#  # print(clf.best_params_)
+#  # print()
+#  # print("Grid scores on development set:")
+#  # print()
+#  # means = clf.cv_results_['mean_test_score']
+#  # stds = clf.cv_results_['std_test_score']
+#  # for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+#  #     print("%0.3f (+/-%0.03f) for %r"
+#  #           % (mean, std * 2, params))
+#  # print()
+#  #
+#  # print("Detailed classification report:")
+#  # print()
+#  # print("The model is trained on the full development set.")
+#  # print("The scores are computed on the full evaluation set.")
+#  # print()
+#  # y_true, y_pred = Y_test, clf.predict(X_test)
+#  # print(classification_report(y_true, y_pred))
+#  # print()
+#
 
-model = XGBClassifier( learning_rate =0.13,
-        n_estimators=1500,
-        max_depth=5,min_child_weight=1,
-        gamma=0,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        objective= 'binary:logistic',
-        nthread=4,
-        seed=27)
-model.fit(X_train, y_train)
-pred = model.predict(X_test)
-real = y_test
-cm = confusion_matrix(real, pred)
-print confusion_matrix(real, pred)
+
+# model = XGBClassifier( learning_rate =0.13,
+#         n_estimators=1500,
+#         max_depth=5,min_child_weight=1,
+#         gamma=0,
+#         subsample=0.8,
+#         colsample_bytree=0.8,
+#         objective= 'binary:logistic',
+#         nthread=4,
+#         seed=27)
+# model.fit(X_train, y_train)
+# pred = model.predict(X_test)
+# real = y_test
+# cm = confusion_matrix(real, pred)
+# print confusion_matrix(real, pred)
+
+
+
+#Parameter grid search with xgboost
+
+
+xgb_model = xgb.XGBClassifier()
+
+#brute force scan for all parameters, here are the tricks
+#usually max_depth is 6,7,8
+#learning rate is around 0.05, but small changes may make big diff
+#tuning min_child_weight subsample colsample_bytree can have
+#much fun of fighting against overfit
+#n_estimators is how many round of boosting
+#finally, ensemble xgboost with multiple seeds may reduce variance
+parameters = {'nthread':[4], #when use hyperthread, xgboost may become slower
+              'objective':['binary:logistic'],
+              'learning_rate': [0.05, 0.9, 0.13], #so called `eta` value
+              'max_depth': [6,7,8],
+              'min_child_weight': [1, 5, 11],
+              'silent': [1],
+              'subsample': [0.8],
+              'colsample_bytree': [0.7, 0.8, 0.9],
+              'n_estimators': [500, 1000, 1500], #number of trees, change it to 1000 for better results
+              'missing':[-999],
+              'seed': [27, 500, 1337]}
+
+
+clf = GridSearchCV(xgb_model, parameters, n_jobs=5,
+                   cv=StratifiedKFold(train['QuoteConversion_Flag'], n_folds=5, shuffle=True),
+                   scoring='roc_auc',
+                   verbose=2, refit=True)
+
+clf.fit(X_train, t_train)
+
+#trust your CV!
+best_parameters, score, _ = max(clf.grid_scores_, key=lambda x: x[1])
+print('Raw AUC score:', score)
+for param_name in sorted(best_parameters.keys()):
+    print("%s: %r" % (param_name, best_parameters[param_name]))
+
+test_probs = clf.predict_proba(test[features])[:,1]
+
+
+
+################
 
 from sklearn.metrics import cohen_kappa_score
 kappa = cohen_kappa_score(real, pred)
