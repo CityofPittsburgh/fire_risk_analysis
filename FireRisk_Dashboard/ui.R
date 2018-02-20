@@ -1,15 +1,9 @@
 # Data dashboard for Metro21 Fire Risk Analysis Project
 # Created for: Pittsburgh Bureau of Fire
-# Authors: Qianyi Hu, Michael Madaio
-# Latest update: January 25, 2018
-
+# Authors: Qianyi Hu, Michael Madaio, Geoffrey Arnold
+# Latest update: February 20, 2018
 
 # This is the ui part of the dashboard
-
-#install.packages("shiny")
-#install.packages("markdown")
-library(shiny)
-library(markdown)
 
 shinyUI(fluidPage(
   # sidebar
@@ -32,22 +26,22 @@ shinyUI(fluidPage(
       
       selectInput("property",
                   label = "Filter by property type",
-                  choices = c("All Classification Types",as.vector(sort(unique(model$state_desc)))),
+                  choices = c("All Classification Types",as.vector(sort(unique(loadModel$state_desc)))),
                   selected = "All Classification Types",
                   multiple=TRUE),
       selectInput("use",
                   label = NULL,
-                  choices = c("All Usage Types",as.vector(sort(unique(model$use_desc)))),
+                  choices = c("All Usage Types",as.vector(sort(unique(loadModel$use_desc)))),
                   selected = "All Usage Types",
                   multiple=TRUE),
       selectInput("nbhood",
                   label = "Filter by location",
-                  choices = c("All Neighborhoods", as.vector(sort(unique(model$geo_name_nhood)))),
+                  choices = c("All Neighborhoods", as.vector(sort(unique(loadModel$geo_name_nhood)))),
                   selected = "All Neighborhoods",
                   multiple=TRUE),
       selectInput("fire_dst",
                   label = NULL,
-                  choices = c("All Fire Districts",as.vector(sort(unique(model$Pgh_FireDistrict)))),
+                  choices = c("All Fire Districts",as.vector(sort(unique(loadModel$Pgh_FireDistrict)))),
                   selected = "All Fire Districts",
                   multiple=TRUE),
       sliderInput("range",

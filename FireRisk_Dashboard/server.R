@@ -1,25 +1,16 @@
 # Data dashboard for Metro21 Fire Risk Analysis Project
 # Created for: Pittsburgh Bureau of Fire
-# Authors: Qianyi Hu, Michael Madaio
-# Latest update: January 25, 2018
+# Authors: Qianyi Hu, Michael Madaio, Geoffrey Arnold
+# Latest update: February 20, 2018
 
 
 # The server side of the dashboard
 
-#install.packages("shiny")
-#install.packages("ggplot2")
-#install.packages("dplyr")
-#install.packages("plotly")
-library(shiny)
-library(ggplot2)
-library(dplyr)
-library(plotly)
+source("global.R", local = FALSE)
 
-
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
-  # read data  
-  model <- read.csv("fire_risk_nonres.csv")   
+  model <- loadModel
 
   model$Score <- ceiling(model$RiskScore*10)
   print(model$Pgh_FireDistrict)
