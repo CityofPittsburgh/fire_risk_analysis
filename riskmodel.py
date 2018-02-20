@@ -27,7 +27,6 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.cross_validation import KFold, StratifiedKFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.grid_search import GridSearchCV
@@ -35,24 +34,27 @@ from sklearn_pandas import DataFrameMapper
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
-# from xgboost import XGBClassifier
+from xgboost import XGBClassifier
+import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier
 import datetime
 from dateutil.relativedelta import relativedelta
 import os
-import xgboost as xgb
-
 
 # Turn off pandas chained assignment warning
 pd.options.mode.chained_assignment = None  # default='warn'
 
+
+
+
+
 # =============================#1: CLEAN PLI & PITT DATA========================
 # create directory paths for opening files
-#curr_path = os.path.dirname(os.path.realpath(__file__))
+#root = os.path.dirname(os.path.realpath(__file__))
 
 root = "/home/linadmin/FirePred/"
 dataset_path = "{0}datasets/".format(root)
-log_path = "{0}log/".format(root)
+log_path = "{0}logs/".format(root)
 png_path = "{0}images/".format(root)
 
 # Reading plidata
@@ -64,7 +66,6 @@ pittdata = pd.read_csv(os.path.join(dataset_path, "pittdata.csv"),dtype={'PROPER
 #removing all properties outside Pittsburgh, Wilkinsburg, and Ingram
 pittdata = pittdata[(pittdata.PROPERTYCITY == 'PITTSBURGH')]
 pittdata = pittdata[pittdata['MUNIDESC'].str.contains("Ward|Ingram|Wilkinsburg")]
-
 
 #removing extra whitespaces
 plidata['STREET_NAME'] = plidata['STREET_NAME'].str.strip()
@@ -180,7 +181,6 @@ pcafinal = reduce(lambda left,right: pd.merge(left,right,on= [ "PROPERTYHOUSENUM
 plipca1 = pd.merge(pcafinal, newpli, how = 'left', left_on =[ "PROPERTYHOUSENUM", "PROPERTYADDRESS"], right_on = [ "PROPERTYHOUSENUM", "PROPERTYADDRESS"] )
 # ============#1 DONE, ^this is the cleaned dataframe of pli + pitt ============
 
-
 # =====================#2 CLEAN FIRE INCIDENT DATA====================
 #loading fire incidents csvs
 fire_pre14 = pd.read_csv(os.path.join(dataset_path, "Fire_Incidents_Pre14.csv"),encoding = 'latin-1',dtype={'street':'str','number':'str'}, low_memory=False)
@@ -285,7 +285,6 @@ pcafire['full.code'][pcafire['fire'] == 'fire'] = None
 
 #Fire occured after inspection
 pcafire1 = pcafire[(pcafire.CALL_CREATED_DATE >= pcafire.INSPECTION_DATE )]
-pcafire1 = pcafire[(pcafire.CALL_CREATED_DATE >= pcafire.INSPECTION_DATE )]
 pcafire1 = pcafire1[pd.notnull(pcafire1.INSPECTION_DATE)]
 
 #checking if violation is in the same year as the fire and keeping only those
@@ -325,8 +324,8 @@ ohe10 = pd.get_dummies(combined_df['INSPECTION_RESULT'])
 combined_df1 = pd.concat([combined_df[['PROPERTYADDRESS','PROPERTYHOUSENUM','CALL_CREATED_DATE','fire','fire_year']],ohe8,ohe9,ohe10], axis=1)
 
 
-#PREPARING THE TESTING DATA (final 6 months of data)
-cutoff = datetime.datetime.now() - relativedelta(months=6)
+#PREPARING THE TESTING DATA (final year of data)
+cutoff = datetime.datetime.now() - relativedelta(months=12)
 cutoffdate = cutoff.strftime("%m/%d/%Y")
 
 
@@ -385,7 +384,7 @@ traindata.loc[traindata.fire != 0, 'fire'] = 1
 
 #concatenating non fire, non pca and fire instances together
 nofire_train = pd.concat([pcafinal[["PROPERTYHOUSENUM","PROPERTYADDRESS"]], traindata[["PROPERTYHOUSENUM","PROPERTYADDRESS"]],traindata[["PROPERTYHOUSENUM","PROPERTYADDRESS"]]]).drop_duplicates(keep=False)
-traindata = traindata.append(nofire2017, ignore_index=True)
+traindata = traindata.append(nofire_train, ignore_index=True)
 traindata = traindata.fillna(0)
 train_data = pd.merge(traindata,pcafinal, on = ["PROPERTYHOUSENUM", "PROPERTYADDRESS"], how = 'left')
 #train_data.fire.value_counts()
@@ -422,133 +421,47 @@ y_test = np.reshape(fireVarTest.values,[fireVarTest.shape[0],])
 
 # =========================== #5 MODEL & PREDICTION =============================
 #The XG Boost model
-#
-# ### C: 10
-#  ### gamma: 1
-# tuned_parameters = [{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],
-#                  'C': [1, 10, 100, 1000]},
-#                {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
-# Cs = [1,10]
-# gammas = [0.001, 0.01, 0.1, 1]
-# param_grid = {'C': Cs, 'gamma' : gammas}
-# grid_search = GridSearchCV(model, param_grid, cv=3)
-# grid_search.fit(X_train, Y_train)
-# tuned_parameters = grid_search.best_params_
-#  #print grid_search.best_params_
-#
-# scores = ['precision', 'recall', 'accuracy','AUC']
-#
-# for score in scores:
-#  print("# Tuning hyper-parameters for %s" % score)
-#  print()
-#
-#  clf = GridSearchCV(XGBClassifier(C=1), tuned_parameters, cv=3,
-#                     scoring='%s_macro' % score)
-#  clf.fit(X_train, Y_train)
-#
-#  # print("Best parameters set found on development set:")
-#  # print()
-#  # print(clf.best_params_)
-#  # print()
-#  # print("Grid scores on development set:")
-#  # print()
-#  # means = clf.cv_results_['mean_test_score']
-#  # stds = clf.cv_results_['std_test_score']
-#  # for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-#  #     print("%0.3f (+/-%0.03f) for %r"
-#  #           % (mean, std * 2, params))
-#  # print()
-#  #
-#  # print("Detailed classification report:")
-#  # print()
-#  # print("The model is trained on the full development set.")
-#  # print("The scores are computed on the full evaluation set.")
-#  # print()
-#  # y_true, y_pred = Y_test, clf.predict(X_test)
-#  # print(classification_report(y_true, y_pred))
-#  # print()
-#
 
 
-# model = XGBClassifier( learning_rate =0.13,
-#         n_estimators=1500,
-#         max_depth=5,min_child_weight=1,
-#         gamma=0,
-#         subsample=0.8,
-#         colsample_bytree=0.8,
-#         objective= 'binary:logistic',
-#         nthread=4,
-#         seed=27)
-# model.fit(X_train, y_train)
-# pred = model.predict(X_test)
-# real = y_test
-# cm = confusion_matrix(real, pred)
-# print confusion_matrix(real, pred)
-
-
-
-#Parameter grid search with xgboost
-
-
-xgb_model = xgb.XGBClassifier()
-
-#brute force scan for all parameters, here are the tricks
-#usually max_depth is 6,7,8
-#learning rate is around 0.05, but small changes may make big diff
-#tuning min_child_weight subsample colsample_bytree can have
-#much fun of fighting against overfit
-#n_estimators is how many round of boosting
-#finally, ensemble xgboost with multiple seeds may reduce variance
-parameters = {'nthread':[4], #when use hyperthread, xgboost may become slower
-              'objective':['binary:logistic'],
-              'learning_rate': [0.05, 0.9, 0.13], #so called `eta` value
-              'max_depth': [6,7,8],
-              'min_child_weight': [1, 5, 11],
-              'silent': [1],
-              'subsample': [0.8],
-              'colsample_bytree': [0.7, 0.8, 0.9],
-              'n_estimators': [500, 1000, 1500], #number of trees, change it to 1000 for better results
-              'missing':[-999],
-              'seed': [27, 500, 1337]}
-
-
-clf = GridSearchCV(xgb_model, parameters, n_jobs=5,
-                   cv=StratifiedKFold(train['QuoteConversion_Flag'], n_folds=5, shuffle=True),
-                   scoring='roc_auc',
-                   verbose=2, refit=True)
-
-clf.fit(X_train, t_train)
-
-#trust your CV!
-best_parameters, score, _ = max(clf.grid_scores_, key=lambda x: x[1])
-print('Raw AUC score:', score)
-for param_name in sorted(best_parameters.keys()):
-    print("%s: %r" % (param_name, best_parameters[param_name]))
-
-test_probs = clf.predict_proba(test[features])[:,1]
-
-
-
-################
+model = XGBClassifier( learning_rate =0.13,
+        n_estimators=1500,
+        max_depth=3,
+        min_child_weight=1,
+        gamma=0.5,
+        subsample=1.0,
+        colsample_bytree= 0.6,
+        objective= 'binary:logistic',
+        nthread=4,
+        silent=False,
+        seed=27)
+model.fit(X_train, y_train)
+pred = model.predict(X_test)
+real = y_test
+cm = confusion_matrix(real, pred)
+print confusion_matrix(real, pred)
 
 from sklearn.metrics import cohen_kappa_score
 kappa = cohen_kappa_score(real, pred)
 
-fpr, tpr, thresholds = metrics.roc_curve(y_test, pred, pos_label=1)
+
+## Calculate model performance metrics
+fpr, tpr, _ = metrics.roc_curve(y_test, pred, pos_label=1)
 roc_auc = metrics.auc(fpr, tpr)
+
 
 acc = 'Accuracy = {0} \n \n'.format(float(cm[0][0] + cm[1][1])/len(real))
 kapp = 'kappa score = {0} \n \n'.format(kappa)
 auc = 'AUC Score = {0} \n \n'.format(metrics.auc(fpr, tpr))
 recall = 'recall = {0} \n \n'.format(tpr[1])
 precis = 'precision = {0} \n \n'.format(float(cm[1][1])/(cm[1][1]+cm[0][1]))
+f1 = 2*(tpr[1] * float(cm[1][1])/(cm[1][1]+cm[0][1]))/ (tpr[1] + float(cm[1][1])/(cm[1][1]+cm[0][1]))
 
 print acc
 print kapp
 print auc
 print recall
 print precis
-
+print 'f1 score = ', f1
 
 
 ### Write model performance to log file:
@@ -563,6 +476,7 @@ with open('{0}ModelPerformance_{1}.txt'.format(log_path, datetime.datetime.now()
     log_file.write(auc)
     log_file.write(recall)
     log_file.write(precis)
+    log_file.write('f1 score = {0}'.format(f1))
 
 
 
@@ -582,30 +496,33 @@ cols = {"Address": addresses, "Fire":pred,"RiskScore":risk,"state_desc":state_de
 
 Results = pd.DataFrame(cols)
 
-#Writing results to the updating Results.csv
+#Writing results to the regularly updating Results.csv
 Results.to_csv(os.path.join(dataset_path, "Results.csv"))
 
 
-# Writing results to a log file
+# Writing results to a log file for post-hoc model performance analysis
 Results.to_csv('{0}Results_{1}.csv'.format(log_path, datetime.datetime.now()))
 
 
-#Plotting the ROC curve
-plt.title('Receiver Operating Characteristic')
-plt.plot(fpr[1:], tpr[1:], 'b',
-        label='AUC = %0.2f'% roc_auc)
-plt.legend(loc='lower right')
-plt.plot([0,1],[0,1],'r--')
-plt.xlim([-0.1,1.2])
-plt.ylim([-0.1,1.2])
-plt.ylabel('True Positive Rate')
+# #Plotting the ROC curve
+plt.figure()
+lw = 2
+plt.plot(fpr, tpr, color='darkorange',
+     lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+plt.xlim([-0.02, 1.0])
+plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
-#plt.show()
+plt.ylabel('True Positive Rate')
+plt.title('ROC curve')
+plt.legend(loc="lower right")
+plt.show()
 
 
 roc_png = "{0}ROC_{1}.png".format(png_path, datetime.datetime.now())
 plt.savefig(roc_png, dpi=150)
 plt.clf()   # Clear figure
+
 
 #Tree model for getting feature importance
 clf = ExtraTreesClassifier()
@@ -627,6 +544,7 @@ print important_features[0:20]
 #Plotting the top 20 features
 y_pos = np.arange(len(important_features.index[0:20]))
 
+
 plt.bar(y_pos,important_features.values[0:20], alpha=0.3)
 plt.xticks(y_pos, important_features.index[0:20], rotation = (90), fontsize = 11, ha='left')
 plt.ylabel('Feature Importance Scores')
@@ -634,11 +552,11 @@ plt.title('Feature Importance')
 
 
 features_png = "{0}FeatureImportancePlot_{1}.png".format(png_path, datetime.datetime.now())
-plt.savefig(features_png, dpi=150)
+plt.savefig(features_png, dpi=150, bbox_inches="tight")
 plt.clf()
 
 important_features[0:50].to_csv('{0}FeatureImportanceList_{1}.csv'.format(log_path, datetime.datetime.now()))
 
 
 
-#plt.show()
+###### End ######

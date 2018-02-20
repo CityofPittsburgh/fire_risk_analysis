@@ -6,3 +6,11 @@ datasets/parcels.csv
 *.csv
 datasets/.DS_Store
 datasets/._.DS_Store
+
+*.sh
+
+FireRisk_Dashboard/.RData
+
+FireRisk_Dashboard/.Rhistory
+
+Run_Model.sh
