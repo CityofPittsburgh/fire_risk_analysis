@@ -7,7 +7,7 @@
 
 shinyUI(fluidPage(
   # sidebar
-  
+  titlePanel("Fire Risk Dashboard"),
   sidebarLayout(
     
     
