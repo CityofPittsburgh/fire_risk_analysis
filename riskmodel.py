@@ -54,7 +54,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 root = "/home/linadmin/FirePred/"
 dataset_path = "{0}datasets/".format(root)
-log_path = "{0}logs/".format(root)
+log_path = "{0}log/".format(root)
 png_path = "{0}images/".format(root)
 
 # Reading plidata
