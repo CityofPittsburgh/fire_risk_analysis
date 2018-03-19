@@ -1,0 +1,38 @@
+{
+  "pin": {
+    "pattern": "^pin$"
+  },
+  "block_lot": {
+    "pattern": "^block_lot$"
+  },
+  "filing_date": {
+    "pattern": "^filing_date$"
+  },
+  "tax_year": {
+    "pattern": "^tax_year$"
+  },
+  "dtd":{
+    "pattern": "^dtd$"
+  },
+  "lien_description":{
+    "pattern":"^lien_description$"
+  },
+  "municipality": {
+    "pattern":"^municipality$"
+  },
+  "ward": {
+    "pattern":"^ward$"
+  },
+  "last_docket_entry": {
+    "pattern":"^last_docket_entry$"
+  },
+  "amount": {
+    "pattern": "^amount$"
+  },
+  "assignee": {
+    "pattern": "^assignee$"
+  },
+  "satisfied": {
+    "pattern": "^satisfied$"
+  }
+}
