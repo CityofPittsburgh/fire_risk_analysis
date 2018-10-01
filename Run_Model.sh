@@ -5,4 +5,4 @@
 # Date : 12/29/2017
 export DISPLAY=:0.0
 python ./FirePred/getdata.py && python ./FirePred/riskmodel.py && python ./FirePred/merger.py
-cp /opt/shiny-server/samples/sample-apps/PBF/Fire_Map/fire_risk_nonres.csv /opt/shiny-server/samples/sample-apps/PBF/FireRisk_Dashboard/fire_risk_nonres.csv
+cp /opt/shiny-server/samples/sample-apps/PBF/Fire_Map/fire_risk_nonres.csv /var/www/html/fire_risk_nonres.csv
