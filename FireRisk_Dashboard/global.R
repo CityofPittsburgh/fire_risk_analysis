@@ -14,6 +14,7 @@ library(markdown)
 library(ggplot2)
 library(shiny)
 library(dplyr)
+library(plotly)
 
 # read data  
-loadModel <- read.csv("fire_risk_nonres.csv")   
+loadModel <- read.csv("http://rstudio.city.pittsburgh.pa.us/fire_risk_nonres.csv")   

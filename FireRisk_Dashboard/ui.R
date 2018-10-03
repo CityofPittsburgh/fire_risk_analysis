@@ -22,16 +22,14 @@ shinyUI(fluidPage(
                     choices = c("Property Classification","Property Usage Type","Neighborhood","Fire District"),
                     selected = "Property Usage Type",
                     multiple = FALSE),
-
-      
       selectInput("property",
                   label = "Filter by property type",
-                  choices = c("All Classification Types",as.vector(sort(unique(loadModel$state_desc)))),
+                  choices = c("All Classification Types", as.vector(sort(unique(loadModel$state_desc)))),
                   selected = "All Classification Types",
                   multiple=TRUE),
       selectInput("use",
                   label = NULL,
-                  choices = c("All Usage Types",as.vector(sort(unique(loadModel$use_desc)))),
+                  choices = c("All Usage Types", as.vector(sort(unique(loadModel$use_desc)))),
                   selected = "All Usage Types",
                   multiple=TRUE),
       selectInput("nbhood",
@@ -41,7 +39,7 @@ shinyUI(fluidPage(
                   multiple=TRUE),
       selectInput("fire_dst",
                   label = NULL,
-                  choices = c("All Fire Districts",as.vector(sort(unique(loadModel$Pgh_FireDistrict)))),
+                  choices = c("All Fire Districts", as.vector(sort(unique(loadModel$Pgh_FireDistrict)))),
                   selected = "All Fire Districts",
                   multiple=TRUE),
       sliderInput("range",
@@ -62,7 +60,7 @@ shinyUI(fluidPage(
                    div(style="display: inline-block;vertical-align:top;text-align:center", textOutput("n_records")),
                    div(style="display: inline-block;vertical-align:top;float:right", downloadButton("plotVis",label = "Download"))
                  ),
-                 div(style="display: inline-block;vertical-align:top;float:right", plotOutput("distPlot"))
+                 div(style="display: inline-block;vertical-align:top;float:right", plotlyOutput("distPlot", height = "1000px"))
                  ),
         # the table tab includes the table with selected options (another format of the visualization with the same filtered data)
         # it also has the download option to download the table as a csv file.
