@@ -9,11 +9,25 @@
 source("global.R", local = FALSE)
 
 shinyServer(function(input, output, session) {
-  
+  # Bookmark Event
+  observeEvent(input$bookmark, {
+    bookmarks <- isolate(reactiveValuesToList(input))
+    if (is.null(inputs)) {
+      data <- bookmarks
+    } else {
+      data <- bookmarks
+      for (i in names(inputs[!grepl("^_", names(inputs))])) {
+        data[i] <- ifelse(is.null(bookmarks[i]), inputs[i], bookmarks[i])
+        names(data[i]) <- i
+      }
+    }
+    # print(bookmarks)
+    addUpdateDoc(bookmark_id, data, conn)
+    showNotification("Your bookmarks have been saved successfully", type = "message")
+  })
   model <- loadModel
 
   model$Score <- ceiling(model$RiskScore*10)
-  print(model$Pgh_FireDistrict)
   
   # get data subset
   data <- reactive({
@@ -102,7 +116,7 @@ shinyServer(function(input, output, session) {
     }
     plot 
   })
-  
+  output$table <- DT::renderDataTable(data()[c(1:3,86,13,15,17,23,25,99,129)], options = list(scrollX = TRUE))
  
   # download table
   output$downloadTable <- downloadHandler(
