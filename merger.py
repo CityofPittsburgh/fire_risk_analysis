@@ -1,9 +1,10 @@
 __author__ = 'mmadaio'
 
 import pandas as pd
+import feather
 
 # Set input and output folders
-# output = "/opt/shiny-server/samples/sample-apps/PBF/Fire_Map/"
+# output = "/var/www/html/"
 
 # Read fire risk data
 risk = pd.read_csv('/home/linadmin/FirePred/datasets/Results.csv', low_memory = False)
@@ -33,5 +34,12 @@ pitt_risk_parcels = pd.merge(left=pitt_risk,right=parcels, how='left', left_on='
 # Filter out everything but properties in Pittsburgh Municipality
 pitt_risk_parcels = pitt_risk_parcels[pitt_risk_parcels['MUNIDESC'].str.contains("Ward|Ingram|Wilkinsburg",na=False)]
 
-# Output to csv
-pitt_risk_parcels.to_csv("/var/www/html/fire_risk_nonres.csv", index=False)
+# String Columns to list
+string_cols = list(pitt_risk_parcels.select_dtypes(exclude=['float64', 'int', 'bool']))
+
+# Encoding issue when writing to feather
+for column in string_cols:
+    pitt_risk_parcels[column] = pitt_risk_parcels[column].astype(unicode)
+        
+# Output to feather
+feather.write_dataframe(pitt_risk_parcels, '/var/www/html/fire_risk_nonres.feather')
