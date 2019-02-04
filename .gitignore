@@ -12,5 +12,7 @@ datasets/._.DS_Store
 FireRisk_Dashboard/.RData
 
 FireRisk_Dashboard/.Rhistory
-
+FireRisk_Dashboard/.Rproj*
 Run_Model.sh
+FireRisk_Dashboard/.key.json
+Test.ipynb
