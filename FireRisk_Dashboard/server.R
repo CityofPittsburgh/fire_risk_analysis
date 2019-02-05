@@ -116,13 +116,13 @@ shinyServer(function(input, output, session) {
     }
     plot 
   })
-  output$table <- DT::renderDataTable(data()[c(1:3,86,13,15,17,23,25,99,129)], options = list(scrollX = TRUE))
+  output$table <- DT::renderDataTable(data(), options = list(scrollX = TRUE))
  
   # download table
   output$downloadTable <- downloadHandler(
     filename = "table.csv",
     content = function(file) {
-      write.csv(as.data.frame(data())[c(1:3,86,13,15,17,23,25,99,129)], file)
+      write.csv(as.data.frame(data()), file)
     }
   )
   
