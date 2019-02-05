@@ -6,13 +6,12 @@ datasets/parcels.csv
 *.csv
 datasets/.DS_Store
 datasets/._.DS_Store
-
 *.sh
-
 FireRisk_Dashboard/.RData
-
 FireRisk_Dashboard/.Rhistory
 FireRisk_Dashboard/.Rproj*
 Run_Model.sh
+.Rproj.user
+FireRisk_Dashboard/key.json
 FireRisk_Dashboard/.key.json
 Test.ipynb
