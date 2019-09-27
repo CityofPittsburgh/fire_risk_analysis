@@ -29,6 +29,9 @@ Takes the output of the risk scores, merged with property data, and visualizes t
 
 All of the packages you'll need to install for the scripts to run.
 
+## FireRisk_Dashboard
+
+Shiny Dashboard that shows data through charts and graphs. Hosted on the City of Pittsburgh ShinyProxy `shiney` server. For detailed instructions on installation and deployment see the README file for [shinyproxy-settings](https://github.com/CityofPittsburgh/shinyproxy-settings/blob/master/README.md). Contains the files necessary for the application to run as well as the Dockerfile needed to build its container.
 
 ### Authors: 
 * Michael Madaio
